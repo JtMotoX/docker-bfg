@@ -1,21 +1,39 @@
-ARG BASE_IMAGE="base-$TARGETARCH-$TARGETVARIANT-end"
-
-FROM eclipse-temurin:17-jre-alpine as base-amd64--end
-FROM arm64v8/eclipse-temurin:17-jre as base-arm64--end
-FROM arm64v8/eclipse-temurin:17-jre as base-arm64-v8-end
-FROM arm32v7/eclipse-temurin:17-jre as base-arm-v7-end
-FROM ppc64le/eclipse-temurin:17-jre as base-ppc64le--end
-
-
-
-FROM alpine as arch-debug
-ARG BASE_IMAGE
-RUN echo "BASE_IMAGE: $BASE_IMAGE"
-
-
-FROM $BASE_IMAGE as final
+FROM eclipse-temurin:17-jdk as packager
 
 ADD https://repo1.maven.org/maven2/com/madgag/bfg/1.14.0/bfg-1.14.0.jar /app.jar
+
+RUN jdeps \
+        --ignore-missing-deps \
+        -q \
+        --multi-release 17 \
+        --print-module-deps \
+        --class-path build/lib/* \
+        /app.jar > jre-deps.info
+
+# USE TMPFS AS A WORKAROUND FOR QEMU BUILDX BUG - https://github.com/rust-lang/cargo/issues/8719#issuecomment-1207488994
+RUN mv /opt/java/openjdk/jmods /opt/java/openjdk/jmods-tmp
+RUN --mount=type=tmpfs,target=/opt/java/openjdk/jmods \
+    --mount=type=tmpfs,target=/build \
+    cp -rp /opt/java/openjdk/jmods-tmp/* /opt/java/openjdk/jmods/ && \
+    jlink \
+        --verbose \
+        --compress 1 \
+        --strip-java-debug-attributes \
+        --no-header-files \
+        --no-man-pages \
+        --output /build/jre \
+        --add-modules $(cat jre-deps.info) && \
+    mv /build/jre /jre
+
+
+FROM ubuntu:latest as final
+
+ENV JAVA_HOME=/opt/java-minimal
+ENV PATH="$PATH:$JAVA_HOME/bin"
+
+COPY --from=packager /jre "$JAVA_HOME"
+
+COPY --from=packager /app.jar /app.jar
 
 ARG NOCACHE
 
