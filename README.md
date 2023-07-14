@@ -17,7 +17,7 @@ Supports multiple architectures:
 If you don't want to run the docker command every time, you can set the following alias:
 
 ```bash
-alias bfg='docker run --rm -v "$(pwd):$(pwd)" -w "$(pwd)" jtmotox/bfg'
+alias bfg='docker run --rm -v "$(pwd):$(pwd)" -w "$(pwd)" -u $(id -u ${USER}):$(id -g ${USER}) jtmotox/bfg'
 ```
 
 Then you can just execute bfg ([examples](https://rtyley.github.io/bfg-repo-cleaner/#examples)).

@@ -33,7 +33,7 @@ ENV PATH="$PATH:$JAVA_HOME/bin"
 
 COPY --from=packager /jre "$JAVA_HOME"
 
-COPY --from=packager /app.jar /app.jar
+COPY --from=packager --chmod=644 /app.jar /app.jar
 
 ARG NOCACHE
 
