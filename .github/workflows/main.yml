@@ -38,10 +38,16 @@ jobs:
         name: Conditional(Set tag as `dev`)
         run: echo 'image_tags=["dev"]' >> $GITHUB_ENV
 
-      - run: |
+      - name: Add image name to list of image tags
+        run: |
           images=$(echo "$image_tags" | jq -c --arg image_name "$image_name" 'map($image_name + ":\(.)")')
           echo $images
           echo "images='$images'" >> $GITHUB_ENV
+
+      - run: |
+          echo $tags
+        env:
+          tags: ${{ fromJson(env.images) }}
 
 
       # - name: Login to Docker Hub
@@ -73,10 +79,10 @@ jobs:
       #     push: true
       #     tags: ${{ fromJson(steps.gen_tags.outputs.tags) }}
 
-      - name: Build and push
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: ./Dockerfile-alpine
-          push: true
-          tags: ${{ fromJson(env.images) }}
+      # - name: Build and push
+      #   uses: docker/build-push-action@v4
+      #   with:
+      #     context: .
+      #     file: ./Dockerfile-alpine
+      #     push: true
+      #     tags: ${{ fromJson(env.images) }}
