@@ -41,8 +41,9 @@ jobs:
       - run: env
 
       - run: |
-          images=$(echo "$image_tags" | jq -c 'map("jtmotox/bfg" + "/\(.)")')
-          echo "$images" >> $GITHUB_ENV
+          images=$(echo "$image_tags" | jq -c --arg image_name "$image_name" 'map($image_name + "/\(.)")')
+          echo $images
+          echo $images >> $GITHUB_ENV
 
       - run: echo $images
 
