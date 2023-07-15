@@ -36,7 +36,7 @@ jobs:
 
       - if: env.image_tags == ''
         name: Conditional(Set tag as `dev`)
-        run: echo "image_tags='dev,foo'" >> $GITHUB_ENV
+        run: echo 'image_tags="dev,foo"' >> $GITHUB_ENV
 
       - name: Add image name to list of image tags
         run: |
