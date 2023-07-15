@@ -40,15 +40,14 @@ jobs:
 
       - name: Add image name to list of image tags
         run: |
-          IFS=',' read -ra arr <<< "$image_tags"
+          IFS=','
+          set -- $image_tags
           images=""
-          for item in "${arr[@]}"; do
-              images+="$prefix:$item,"
+          for item do
+              images="$images$image_name:$item,"
           done
           images=${images%,}
-          
-          # images=$(echo "$image_tags" | sed 's/[^,]*/jtmotox\/bfg:&/g')
-          echo $images
+          echo "$images"
           # echo "images=$images" >> $GITHUB_ENV
 
       - run: |
