@@ -48,7 +48,7 @@ jobs:
           done
           images=${images%,}
           echo "$images"
-          # echo "images=$images" >> $GITHUB_ENV
+          echo "images=$images" >> $GITHUB_ENV
 
       - run: |
           echo $images
