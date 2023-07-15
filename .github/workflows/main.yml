@@ -43,7 +43,7 @@ jobs:
       - run: |
           images=$(echo "$image_tags" | jq -c --arg image_name "$image_name" 'map($image_name + ":\(.)")')
           echo $images
-          echo "'"$images"'" >> $GITHUB_ENV
+          echo "$images" | less -R >> $GITHUB_ENV
 
       - run: echo $images
 
