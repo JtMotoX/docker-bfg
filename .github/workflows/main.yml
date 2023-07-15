@@ -38,6 +38,8 @@ jobs:
         name: Conditional(Set tag as `dev`)
         run: echo 'image_tags=["dev"]' >> $GITHUB_ENV
 
+      - run: env
+
       - run: |
           images=$(echo "$image_tags" | jq 'map("jtmotox/bfg" + "/\(.)")')
           echo "$images" >> $GITHUB_ENV
