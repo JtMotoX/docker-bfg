@@ -1,7 +1,7 @@
 #!/bin/bash
 
 image_name="jtmotox/bfg"
-image_tags="foo,bar"
+image_tags="'foo,bar'"
 
 IFS=','  # Set the input field separator to comma
 set -- $image_tags  # Split the string into positional parameters
