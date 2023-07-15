@@ -9,7 +9,10 @@ on:
       - 'main'
   workflow_dispatch:
   schedule:
-    - cron: '0 0 1 * *'
+    - cron: '0 0 1 */3 *'
+
+env:
+  image_name: ${{ vars.DOCKER_USERNAME }}/bfg
 
 jobs:
 
@@ -23,20 +26,24 @@ jobs:
         with:
           submodules: 'true'
 
-      - name: Set image name
-        run: echo "image_name=${{ vars.DOCKER_USERNAME }}/bfg" >> $GITHUB_ENV
-
       - if: github.ref == 'refs/heads/main'
         name: Conditional(Set tag as `latest`)
-        run: echo "image_tag=latest" >> $GITHUB_ENV
+        run: |
+          echo "image_tags_alpine=alpine,latest" >> $GITHUB_ENV
+          echo "image_tags_ubuntu=ubuntu" >> $GITHUB_ENV
 
-      - if: startsWith(github.ref, 'refs/tags/')
-        name: Conditional(Set tag as `{version}`)
-        run: echo "image_tag=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-
-      - if: env.image_tag == ''
+      - if: env.image_tags_alpine == ''
         name: Conditional(Set tag as `dev`)
-        run: echo "image_tag=dev" >> $GITHUB_ENV
+        run: |
+          echo 'image_tags_alpine=alpine-dev' >> $GITHUB_ENV
+          echo 'image_tags_ubuntu=ubuntu-dev' >> $GITHUB_ENV
+
+      - name: Add image name to list of image tags
+        run: |
+          images_alpine=$(echo "${image_tags_alpine}" | sed "s,[^,]*,${image_name}:&,g")
+          images_ubuntu=$(echo "${image_tags_ubuntu}" | sed "s,[^,]*,${image_name}:&,g")
+          echo "images_alpine=${images_alpine}" >> $GITHUB_ENV
+          echo "images_ubuntu=${images_ubuntu}" >> $GITHUB_ENV
 
       - name: Login to Docker Hub
         uses: docker/login-action@v2
@@ -53,11 +60,20 @@ jobs:
         id: buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Build and push
+      - name: Build and push ubuntu
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: ./Dockerfile
+          file: ./Dockerfile-ubuntu
           platforms: linux/amd64,linux/arm/v7,linux/arm64,linux/ppc64le
           push: true
-          tags: ${{ env.image_name }}:${{ env.image_tag }}
+          tags: ${{ env.images_ubuntu }}
+
+      - name: Build and push alpine
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile-alpine
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ env.images_alpine }}

@@ -35,6 +35,8 @@ COPY --from=packager /jre "$JAVA_HOME"
 
 COPY --from=packager --chmod=644 /app.jar /app.jar
 
+WORKDIR /work
+
 ARG NOCACHE
 
 RUN java -jar /app.jar | grep '^bfg '
