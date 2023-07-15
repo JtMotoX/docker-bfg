@@ -88,4 +88,4 @@ jobs:
           file: ./Dockerfile-alpine
           push: true
           # tags: ${{ env.images }}
-          tags: foo,bar
+          tags: jtmotox/bfg:foo,jtmotox/bfg:bar
