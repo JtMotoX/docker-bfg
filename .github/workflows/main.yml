@@ -40,13 +40,7 @@ jobs:
 
       - name: Add image name to list of image tags
         run: |
-          IFS=','
-          set -- $image_tags
-          images=""
-          for item do
-              images="$images$image_name:$item,"
-          done
-          images=${images%,}
+          images=$(echo "$image_tags" | sed "s,[^,]*,$image_name:&,g")
           echo "$images"
           echo "images=$images" >> $GITHUB_ENV
 
