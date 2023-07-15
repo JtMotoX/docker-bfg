@@ -6,7 +6,7 @@ This is a lightweight (~30mb compressed) Docker image with [BFG Repo-Cleaner](ht
 
 # Usage
 
-Then you can just execute bfg ([examples](https://rtyley.github.io/bfg-repo-cleaner/#examples)).
+See bfg [usage](https://rtyley.github.io/bfg-repo-cleaner/#usage) and [examples](https://rtyley.github.io/bfg-repo-cleaner/#examples).
 
 ## Examples
 
