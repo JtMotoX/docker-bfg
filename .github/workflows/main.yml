@@ -45,8 +45,10 @@ jobs:
           echo "images='$images'" >> $GITHUB_ENV
 
       - run: |
+          echo $images
           echo $tags
         env:
+          images: ${{ env.images }}
           tags: ${{ fromJson(env.images) }}
 
 
