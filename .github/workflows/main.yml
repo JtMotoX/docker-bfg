@@ -87,4 +87,4 @@ jobs:
           context: .
           file: ./Dockerfile-alpine
           push: true
-          tags: ${{ fromJson(env.images) }}
+          tags: ${{ env.images }}
