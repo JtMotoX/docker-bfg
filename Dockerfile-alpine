@@ -30,9 +30,12 @@ COPY --from=packager /jre "$JAVA_HOME"
 
 COPY --from=packager --chmod=644 /app.jar /app.jar
 
-WORKDIR /work
+ARG WORKDIR="/work"
 
-ARG NOCACHE
+WORKDIR "${WORKDIR}"
+
+RUN mkdir -p "${WORKDIR}.bfg-report" && \
+    chmod 777 "${WORKDIR}.bfg-report"
 
 RUN java -jar /app.jar | grep '^bfg '
 
