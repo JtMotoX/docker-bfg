@@ -34,9 +34,8 @@ ARG WORKDIR="/work"
 
 WORKDIR "${WORKDIR}"
 
-RUN mkdir -p "${WORKDIR}.bfg-report" && \
-    chmod 777 "${WORKDIR}.bfg-report"
-
 RUN java -jar /app.jar | grep '^bfg '
 
-ENTRYPOINT ["java","-jar","/app.jar"]
+COPY --chmod=755 ./entrypoint.sh /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
